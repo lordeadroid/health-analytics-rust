@@ -7,23 +7,17 @@ impl Routes {
   pub const GET_DATA: &'static str = "/get-data";
 }
 
-fn get_methods(url: Url) -> Result<Response> {
-  match url.path() {
-    Routes::HOME => Response::ok("This is a home Method "),
-    Routes::GET_DATA => Response::ok("This getting all data"),
-    _ => Response::error("Not Found", 404),
-  }
-}
-
 #[event(fetch)]
-async fn fetch(req: Request, _env: Env, _ctx: Context) -> Result<Response> {
+pub async fn fetch(req: Request, env: Env, _ctx: Context) -> Result<Response> {
   console_error_panic_hook::set_once();
 
-  let method = req.method();
-  let url = req.url()?;
+  let router = Router::new();
 
-  match method {
-    Method::Get => get_methods(url),
-    _ => Response::ok("This method is not supported"),
-  }
+  router
+    .get(Routes::HOME, |_, _| Response::ok("This is a home Method"))
+    .get(Routes::GET_DATA, |_, _| {
+      Response::ok("This getting all data")
+    })
+    .run(req, env)
+    .await
 }
