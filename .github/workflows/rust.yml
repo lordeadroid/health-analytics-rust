@@ -15,7 +15,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Build
-        run: cargo build --verbose
+      - name: Install worker-build
+        run: cargo install -q worker-build
+      - name: Build for Cloudflare Workers
+        run: worker-build --release
     # - name: Run tests
     #   run: cargo test --verbose
